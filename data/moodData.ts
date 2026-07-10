@@ -1,3 +1,20 @@
+export type Case = {
+  tag: string;
+  title: string;
+  body: string;
+  tip: string;
+};
+
+export type Option = {
+  label: string;
+  points: Record<string, number>;
+};
+
+export type Question = {
+  q: string;
+  options: Option[];
+};
+
 export const COLORS = {
   bg: "#EDE4D3",
   card: "#FBF7EE",
@@ -9,7 +26,7 @@ export const COLORS = {
   line: "#D9CCB2",
 };
 
-export const CASES = {
+export const CASES: Record<string, Case> = {
   hunger: {
     tag: "LOW FUEL",
     title: "Your blood sugar is probably driving the bus.",
@@ -162,7 +179,7 @@ export const CASES = {
   },
 };
 
-export const QUESTIONS = [
+export const QUESTIONS: Question[] = [
   {
     q: "When did you last eat something real?",
     options: [

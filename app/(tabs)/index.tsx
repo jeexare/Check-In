@@ -1,4 +1,4 @@
-import { CASES, COLORS, QUESTIONS } from "@/data/moodData";
+import { Case, CASES, COLORS, Option, QUESTIONS } from "@/data/moodData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import {
@@ -11,12 +11,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HISTORY_KEY = "mood-sessions";
+type HistoryEntry = { date: string; tags: string[] };
 
 export default function CheckInScreen() {
   const [step, setStep] = useState(0);
-  const [scores, setScores] = useState({});
+  const [scores, setScores] = useState<Record<string, number>>({});
   const [done, setDone] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [historyLoaded, setHistoryLoaded] = useState(false);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function CheckInScreen() {
     })();
   }, []);
 
-  function computeSuspects(scoreMap) {
+  function computeSuspects(scoreMap: Record<string, number>): Case[] {
     const entries = Object.entries(scoreMap).filter(([, v]) => v > 0);
     if (entries.length === 0) return [CASES.unnamed];
     entries.sort((a, b) => b[1] - a[1]);
@@ -43,7 +44,7 @@ export default function CheckInScreen() {
       .map(([k]) => CASES[k]);
   }
 
-  async function saveSession(suspects) {
+  async function saveSession(suspects: Case[]) {
     const entry = {
       date: new Date().toISOString(),
       tags: suspects.map((s) => s.tag),
@@ -57,7 +58,7 @@ export default function CheckInScreen() {
     }
   }
 
-  function choose(opt) {
+  function choose(opt: Option) {
     const next = { ...scores };
     Object.entries(opt.points).forEach(([k, v]) => {
       next[k] = (next[k] || 0) + v;
@@ -79,7 +80,7 @@ export default function CheckInScreen() {
   }
 
   function patternTally() {
-    const counts = {};
+    const counts: Record<string, number> = {};
     history.forEach((entry) =>
       entry.tags.forEach((tag) => {
         counts[tag] = (counts[tag] || 0) + 1;
